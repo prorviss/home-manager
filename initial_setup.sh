@@ -129,11 +129,22 @@ EOL
 
 # Initialize Terraform to configure the backend
 cd "$LOCAL_DIR"
+
 terraform init
 
-# Git setup and commit the Terraform configuration
-git init
-git remote add origin "git@github.com:$REPO.git"
+cd ".."
+
+if [ ! -d "$LOCAL_DIR/.git" ]; then
+    echo "Initializing Git repository and setting remote..."
+    cd "$LOCAL_DIR"
+    git init
+    git remote add origin "git@github.com:$REPO.git"
+else
+    echo "Git repository already initialized."
+    git fetch -all -Pp
+    git pull --rebase
+fi
+
 git add .
 git commit -m "Initial commit of base Terraform configuration"
 git branch -M main
